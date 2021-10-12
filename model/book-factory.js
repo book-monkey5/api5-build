@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const date_fns_1 = require("date-fns");
 exports.PLACEHOLDER_IMG_URL = 'https://api5.angular-buch.com/images/placeholder_book.svg';
 class BookFactory {
     static empty() {
@@ -8,11 +7,7 @@ class BookFactory {
             isbn: '',
             title: '',
             authors: [''],
-            published: new Date().toISOString(),
-            subtitle: '',
-            rating: 3,
             thumbnailUrl: exports.PLACEHOLDER_IMG_URL,
-            description: ''
         };
     }
     static fromJson(json) {
@@ -41,9 +36,6 @@ class BookFactory {
         if (this.validString(json.subtitle)) {
             book.subtitle = json.subtitle.trim();
         }
-        if (this.validNumber(json.rating)) {
-            book.rating = BookFactory.normalizeRating(json.rating);
-        }
         if (this.validString(json.thumbnailUrl)) {
             book.thumbnailUrl = json.thumbnailUrl;
         }
@@ -56,13 +48,8 @@ class BookFactory {
         let i = isbn + '';
         return i.replace(/[^0-9]/g, '');
     }
-    static normalizeRating(rating) {
-        let r = +rating;
-        return (r < 0) ? 0 : (r > 5) ? 5 : r;
-    }
     static normalizeDate(date) {
-        const d = new Date(date);
-        return date_fns_1.format(d, 'yyyy-MM-dd');
+        return new Date(date).toISOString();
     }
     static validString(str) {
         return str === '' || (str && typeof str == 'string');
@@ -81,5 +68,4 @@ class BookFactory {
     }
 }
 exports.BookFactory = BookFactory;
-console.log(BookFactory.normalizeDate('2021-10-01'));
 //# sourceMappingURL=book-factory.js.map

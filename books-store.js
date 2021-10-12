@@ -22,12 +22,14 @@ class BooksStore {
         this.populateCache();
     }
     get books() {
+        let books = this.onlyPublicBooks(this.booksCache);
         if (this.isSecure) {
-            return this.removeSecureInfo(this.addSecureTitle(this.booksCache));
+            books = [...this.onlySecureBooks(this.booksCache), ...books];
         }
-        else {
-            return this.removeSecureInfo(this.onlyPublicBooks(this.booksCache));
-        }
+        return this.removeSecureInfo(books);
+    }
+    sortBooks(books) {
+        return _(books).sortBy(b => b.title).value();
     }
     addSecureTitle(books) {
         return books.map(book => {
@@ -42,31 +44,28 @@ class BooksStore {
         });
     }
     onlyPublicBooks(books) {
-        return books.filter(book => !book.secure);
+        return this.sortBooks(books.filter(book => !book.secure));
+    }
+    onlySecureBooks(books) {
+        return this.addSecureTitle(this.sortBooks(books.filter(book => book.secure)));
     }
     setSecure(isSecure = false) {
         this.isSecure = isSecure;
     }
     getAll() {
-        return _(this.books)
-            .sortBy(b => b.rating)
-            .reverse()
-            .value();
+        return this.books;
     }
     ;
     getAllBySearch(searchTerm) {
         searchTerm = searchTerm.toLowerCase();
         const containsSearchTerm = (checked) => ~checked.toLowerCase().indexOf(searchTerm);
-        return _(this.books)
+        return this.books
             .filter(b => !!(containsSearchTerm(b.isbn) ||
             containsSearchTerm(b.title) ||
             _.some(b.authors, containsSearchTerm) ||
             containsSearchTerm(b.published) ||
             containsSearchTerm(b.subtitle) ||
-            containsSearchTerm(b.description)))
-            .sortBy(b => b.rating)
-            .reverse()
-            .value();
+            containsSearchTerm(b.description)));
     }
     ;
     getByIsbn(isbn) {

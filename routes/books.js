@@ -11,14 +11,13 @@ class BooksRoute {
         const booksRoute = new BooksRoute(bookStore, notificationService);
         const methodsToBind = [
             'getAll', 'getAllBySearch', 'reset', 'create',
-            'rate', 'getByISBN', 'checkISBN', 'update', 'delete'
+            'getByISBN', 'checkISBN', 'update', 'delete'
         ];
         _.bindAll(booksRoute, methodsToBind);
         router.get('/', booksRoute.getAll);
         router.get('/search/:search', booksRoute.getAllBySearch);
         router.delete('/', booksRoute.reset);
         router.post('/', booksRoute.create);
-        router.post('/:isbn/rate', booksRoute.rate);
         router.get('/:isbn', booksRoute.getByISBN);
         router.get('/:isbn/check', booksRoute.checkISBN);
         router.put('/:isbn', booksRoute.update);
@@ -68,7 +67,7 @@ class BooksRoute {
         }
         const book = book_factory_1.BookFactory.fromJson(bookJson);
         this.store.create(book);
-        res.sendStatus(201);
+        res.status(201).json(book);
         if (this.notificationService.hasSubscriber()) {
             const notificationPayload = {
                 title: `🆕📕 ${book.title}`,
@@ -97,7 +96,7 @@ class BooksRoute {
         }
         const book = book_factory_1.BookFactory.fromJson(bookJson);
         this.store.update(book);
-        res.send(200);
+        res.status(200).json(book);
         next();
     }
     ;
@@ -115,22 +114,6 @@ class BooksRoute {
             res.send(200);
             next();
         }
-    }
-    ;
-    rate(req, res, next) {
-        this.store.setSecure(res.locals.authorized);
-        const isbn = req.params.isbn;
-        const rating = req.body.rating;
-        if (!rating && rating !== 0) {
-            return res.status(400).send('Invalid data: rating is mandatory');
-        }
-        const book = this.store.getByIsbn(isbn);
-        if (!book) {
-            return res.status(404).send('Book does not exist');
-        }
-        book.rating = book_factory_1.BookFactory.normalizeRating(rating);
-        res.send(200);
-        next();
     }
     ;
 }
