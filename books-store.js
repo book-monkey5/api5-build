@@ -69,8 +69,8 @@ class BooksStore {
     }
     ;
     getByIsbn(isbn) {
-        isbn = book_factory_1.BookFactory.normalizeIsbn(isbn);
-        return this.books.find(book => book.isbn === isbn);
+        const cleanIsbn = book_factory_1.BookFactory.normalizeIsbn(isbn);
+        return this.books.find(book => book.isbn === cleanIsbn);
     }
     ;
     findByAuthorName(author) {
@@ -93,6 +93,9 @@ class BooksStore {
     ;
     update(book) {
         const oldBook = this.booksCache.find(b => b.isbn === book.isbn);
+        if (!oldBook) {
+            return;
+        }
         const newBook = Object.assign(Object.assign({}, book), { title: this.stripSecurePrefix(book.title), secure: oldBook.secure });
         this.booksCache = this.booksCache.map(b => (b.isbn === book.isbn) ? newBook : b);
     }
