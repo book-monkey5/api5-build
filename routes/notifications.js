@@ -22,11 +22,11 @@ class NotificationsRoute {
             || !notificationRequest.keys.p256dh) {
             return res.status(422).send('Malformed Notification Object');
         }
-        this.notificationService.addSubscription(notificationRequest);
+        this.notificationService.addSubscription(notificationRequest, req.headers.referer);
         res.status(200).send({ message: 'successfully subscribed' });
         const notificationPayload = {
-            title: '🐵 Push-Benachrichtigungen aktiv ✉️',
-            body: 'Sie werden über neue Bücher benachrichtigt',
+            title: '🐵 Push Notifications activated ✉️',
+            body: 'You will be notified of new books',
             vibrate: [50, 50]
         };
         this.notificationService.notify(notificationPayload, notificationRequest);
