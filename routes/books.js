@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const _ = require("lodash");
 const book_factory_1 = require("../model/book-factory");
+const ISBN_CHECK_DELAY = 2000;
 class BooksRoute {
     constructor(store, notificationService) {
         this.store = store;
@@ -51,8 +52,10 @@ class BooksRoute {
         this.store.setSecure(res.locals.authorized);
         const isbn = req.params.isbn;
         const bookExist = this.store.isbnExists(isbn);
-        res.json(bookExist);
-        next();
+        setTimeout(() => {
+            res.json(bookExist);
+            next();
+        }, ISBN_CHECK_DELAY);
     }
     ;
     create(req, res, next) {
