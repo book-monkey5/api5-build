@@ -83,6 +83,7 @@ class BooksStore {
             .value();
     }
     isbnExists(isbn) {
+        isbn = book_factory_1.BookFactory.normalizeIsbn(isbn);
         const book = this.booksCache.find(book => book.isbn === isbn);
         return !!book;
     }
